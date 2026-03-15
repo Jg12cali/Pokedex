@@ -5,17 +5,11 @@ import { commandHelp }from "./command_help.js";
 import type { State } from "./state.js"
 
 
-
-
-const rl = createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  prompt: "Pokedex >",
-})
-
 export function startREPL(state: State) {
+  const { rl, commands } = state;
+ 
   rl.prompt()
-
+  
   rl.on("line", (input) => {
     if (!input) {
       rl.prompt()
@@ -27,13 +21,13 @@ export function startREPL(state: State) {
 
     if (result[0] === "exit") {
       try {
-        commands.exit.callback(commands)
+        commands.exit.callback(state)
       } catch (err) {
         console.log((err as Error).message)
       }
     } else if (result[0] === "help") {
       try {
-        commands.help.callback(commands)
+        commands.help.callback(state)
       } catch (err) {
         console.log((err as Error).message)
       }
