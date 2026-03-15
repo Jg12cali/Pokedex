@@ -2,6 +2,7 @@ import { createInterface } from "readline"
 import { getCommands } from "./command.js"
 import { commandExit } from "./command_exit.js";
 import { commandHelp }from "./command_help.js";
+import type { State } from "./state.js"
 
 
 
@@ -12,7 +13,7 @@ const rl = createInterface({
   prompt: "Pokedex >",
 })
 
-export function startREPL() {
+export function startREPL(state: State) {
   rl.prompt()
 
   rl.on("line", (input) => {
