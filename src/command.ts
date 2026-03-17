@@ -12,11 +12,19 @@ import type { CLICommand } from "./state.js"
         description: "Exits the pokedex",
         callback: commandExit,
     },
-    help: {
-    name: "help",
-    description: "Displays a help message",
-    callback: commandHelp, 
 
-}
-}
-}
+      help: {
+        name: "help",
+        description: "Displays a help message",
+        callback: commandHelp, 
+      
+      },  
+
+      map: {
+          name: "map",
+          description: "Displays a help message",
+          callback: commandHelp,
+        }
+
+
+      }}
