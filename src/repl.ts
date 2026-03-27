@@ -1,23 +1,20 @@
 import { createInterface } from "readline"
 import { getCommands } from "./command.js"
-import { commandExit } from "./command_exit.js";
-import { commandHelp }from "./command_help.js";
 import type { State } from "./state.js"
 
 
-export function startREPL(state: State) {
-  const { rl, commands } = state;
+export async function startREPL(state: State) {
+  const { rl, commands, pokeAPI } = state;
  
   rl.prompt()
   
-  rl.on("line", (input) => {
+  rl.on("line", async(input) => {
     if (!input) {
       rl.prompt()
       return
     }
 
     const result = cleanInput(input)
-    const commands = getCommands()
 
     if (result[0] === "exit") {
       try {
@@ -28,6 +25,18 @@ export function startREPL(state: State) {
     } else if (result[0] === "help") {
       try {
         commands.help.callback(state)
+      } catch (err) {
+        console.log((err as Error).message)
+      }
+    } else if (result[0] === "map") {
+      try {
+        commands.map.callback(state)
+      } catch (err) {
+        console.log((err as Error).message)
+      }
+    } else if (result[0] === "mapb") {
+      try {
+        commands.mapb.callback(state)
       } catch (err) {
         console.log((err as Error).message)
       }
@@ -48,3 +57,6 @@ export function cleanInput(input: string): string[] {
 
   return cleaned
 }
+
+
+

@@ -1,12 +1,16 @@
 import { createInterface, type Interface } from "readline";
 import { getCommands } from "./command.js"
+import { PokeAPI } from "./pokeapi.js"
+import { Cache } from "./pokecache.js";
+import type { ShallowLocations, Location } from "./pokeapi.js";
 
-  
+const cache = new Cache(5000)
+const pokeAPI = new PokeAPI(cache)
 
 export type CLICommand = {
     name: string;
     description: string;
-    callback: (state: State) => void;
+    callback: (state: State) => Promise<void>
   };
 
 
@@ -14,6 +18,11 @@ export type CLICommand = {
 
     rl: Interface,
     commands: Record<string, CLICommand>,
+    pokeAPI : PokeAPI,
+    nextLocationsURL: string,
+    prevLocationsURL: string
+
+
   }
 
   export function initState(): State {
@@ -27,7 +36,12 @@ export type CLICommand = {
 
       return {
             rl: rl,
-            commands: commands
+            commands: commands,
+            pokeAPI: pokeAPI,
+            nextLocationsURL: '',
+            prevLocationsURL: ''
+
+
      }
       
        
@@ -35,4 +49,3 @@ export type CLICommand = {
   }
 
 
-  

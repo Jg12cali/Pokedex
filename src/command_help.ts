@@ -1,7 +1,6 @@
-import type { CLICommand } from "./state.js"
 import type { State } from "./state.js"
 
-export function commandHelp(state: State) {
+export async function commandHelp(state: State) {
   const { rl, commands } = state;
 
   console.log();

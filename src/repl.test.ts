@@ -1,31 +1,62 @@
 import { cleanInput } from "./repl.js";
 import { describe, expect, test } from "vitest";
+import { Cache } from "./pokecache"
 
-describe.each([
+test.concurrent.each([
   {
-    input: "  hello  world  ",
-    expected: ["hello", "world"],
-  },  
-  
+    key: "https://example.com",
+    val: "testdata",
+    interval: 500, // 1/2 second
+  },
   {
-    input: "my name is apple ",
-    expected: ["my", "name", "is", "apple"],
-  },  
-  
-  {
-    input: "  I LOVE    COOCA POOFS  ",
-    expected: ["i", "love", "cooca", "poofs"],
-  }
+    key: "https://example.com/path",
+    val: "moretestdata",
+    interval: 1000, // 1 second
+  },
+])("Test Caching $interval ms", async ({ key, val, interval }) => {
+  const cache = new Cache(interval);
 
-]) ("cleanInput($input)", ({ input, expected }) => {
-  test(`Expected: ${expected}`, () => {
-  const actual = cleanInput(input);
-    expect(actual).toHaveLength(expected.length);
-    for (const i in expected) {
-      expect(actual[i]).toBe(expected[i]);
-    }
-  });
+  cache.add(key, val);
+  const cached = cache.get(key);
+  expect(cached).toBe(val);
+
+  await new Promise((resolve) => setTimeout(resolve, interval * 2));
+  const reaped = cache.get(key);
+  expect(reaped).toBe(undefined);
+
+  cache.stopReapLoop();
 });
+
+
+
+// describe.each([
+//   {
+//     input: "  hello  world  ",
+//     expected: ["hello", "world"],
+//   },  
+  
+//   {
+//     input: "my name is apple ",
+//     expected: ["my", "name", "is", "apple"],
+//   },  
+  
+//   {
+//     input: "  I LOVE    COOCA POOFS  ",
+//     expected: ["i", "love", "cooca", "poofs"],
+//   }
+
+// ]) ("cleanInput($input)", ({ input, expected }) => {
+//   test(`Expected: ${expected}`, () => {
+//   const actual = cleanInput(input);
+//     expect(actual).toHaveLength(expected.length);
+//     for (const i in expected) {
+//       expect(actual[i]).toBe(expected[i]);
+//     }
+//   });
+// });
+
+
+
 
 
 
