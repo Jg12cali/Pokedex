@@ -4,7 +4,7 @@ A TypeScript command-line Pokedex that lets users explore the Pokemon world, cat
 
 This project was built as a terminal-first experience with a focus on clean command design, external API integration, stateful gameplay, and resilient error handling.
 
-## special sauce
+## Special Sauce
 
 - Built in TypeScript with a modular command architecture instead of one large script
 - Integrates with the [PokeAPI](https://pokeapi.co/) to fetch real Pokemon and location data
