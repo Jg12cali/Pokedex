@@ -1,7 +1,7 @@
 import type { State } from "./state.js"
 
 export async function commandHelp(state: State) {
-  const { rl, commands } = state;
+  const { commands } = state;
 
   console.log();
   console.log("Welcome to the Pokedex!");
@@ -14,6 +14,5 @@ export async function commandHelp(state: State) {
 
 
 }
-
 
 

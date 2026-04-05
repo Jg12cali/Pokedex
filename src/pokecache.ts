@@ -1,5 +1,3 @@
-import { TIMEOUT } from "node:dns";
-
 type CacheEntry<T> = {
     createdAt: number,
     val: T
@@ -20,7 +18,7 @@ export class Cache {
     
     add<T>(key: string, val: T) {
         const date = Date.now()
-        let entry = {createdAt: date, val: val }
+        const entry = {createdAt: date, val: val }
         this.#cache.set(key, entry)
      }
 
@@ -28,7 +26,7 @@ export class Cache {
         if(!this.#cache.has(key)){
         return undefined
         }
-        let entry = this.#cache.get(key)
+        const entry = this.#cache.get(key)
         return entry?.val             
       }
 
@@ -61,22 +59,3 @@ export class Cache {
         
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-// for (const value of this.#cache.values()){
-     
-//     if(value.createdAt > Date.now() - this.#interval){
-
-//     this.#cache.delete([key, value])
-
-//     }

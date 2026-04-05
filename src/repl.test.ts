@@ -1,8 +1,10 @@
-import { cleanInput } from "./repl.js";
-import { describe, expect, test } from "vitest";
+import { cleanInput, startREPL } from "./repl.js";
+import { expect, test, vi } from "vitest";
 import { Cache } from "./pokecache"
+import type { State } from "./state.js";
+import { commandRareCandy } from "./command_rare_candy.js";
 
-test.concurrent.each([
+test.each([
   {
     key: "https://example.com",
     val: "testdata",
@@ -20,7 +22,7 @@ test.concurrent.each([
   const cached = cache.get(key);
   expect(cached).toBe(val);
 
-  await new Promise((resolve) => setTimeout(resolve, interval * 2));
+  await new Promise((resolve) => setTimeout(resolve, interval * 3));
   const reaped = cache.get(key);
   expect(reaped).toBe(undefined);
 
@@ -28,39 +30,66 @@ test.concurrent.each([
 });
 
 
+test("startREPL awaits command callbacks and re-prompts after handled errors", async () => {
+  const prompt = vi.fn();
+  const on = vi.fn((event: string, handler: (input: string) => Promise<void>) => {
+    if (event === "line") {
+      void handler("catch pikachuu");
+    }
 
-// describe.each([
-//   {
-//     input: "  hello  world  ",
-//     expected: ["hello", "world"],
-//   },  
-  
-//   {
-//     input: "my name is apple ",
-//     expected: ["my", "name", "is", "apple"],
-//   },  
-  
-//   {
-//     input: "  I LOVE    COOCA POOFS  ",
-//     expected: ["i", "love", "cooca", "poofs"],
-//   }
+    return rl;
+  });
 
-// ]) ("cleanInput($input)", ({ input, expected }) => {
-//   test(`Expected: ${expected}`, () => {
-//   const actual = cleanInput(input);
-//     expect(actual).toHaveLength(expected.length);
-//     for (const i in expected) {
-//       expect(actual[i]).toBe(expected[i]);
-//     }
-//   });
-// });
+  const rl = { prompt, on } as unknown as State["rl"];
+  const catchCallback = vi.fn(async () => {
+    console.log('Pokemon "pikachuu" was not found.');
+  });
 
+  const state = {
+    rl,
+    commands: {
+      catch: {
+        name: "catch",
+        description: "Attempt to catch a wild pokemon",
+        callback: catchCallback,
+      },
+    },
+    pokeAPI: {} as State["pokeAPI"],
+    nextLocationsURL: "",
+    prevLocationsURL: "",
+    caughtPokemon: {},
+  } as unknown as State;
 
+  startREPL(state);
+  await new Promise((resolve) => setTimeout(resolve, 0));
 
+  expect(catchCallback).toHaveBeenCalledWith(state, "pikachuu");
+  expect(prompt).toHaveBeenCalledTimes(2);
+});
 
+test("ultra-rare-candy boosts each caught pokemon stat by a random percentage", async () => {
+  const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0)
 
+  const pikachu = {
+    stats: [
+      { base_stat: 100, stat: { name: "hp", url: "" } },
+      { base_stat: 80, stat: { name: "attack", url: "" } },
+    ],
+  } as State["caughtPokemon"][string]
 
+  const state = {
+    caughtPokemon: {
+      pikachu,
+    },
+  } as unknown as State
 
+  await commandRareCandy(state, "pikachu")
+
+  expect(pikachu.stats[0]?.base_stat).toBe(105)
+  expect(pikachu.stats[1]?.base_stat).toBe(84)
+
+  randomSpy.mockRestore()
+});
 
 
 

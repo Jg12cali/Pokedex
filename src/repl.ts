@@ -1,10 +1,8 @@
-import { createInterface } from "readline"
-import { getCommands } from "./command.js"
 import type { State } from "./state.js"
 
 
 export async function startREPL(state: State) {
-  const { rl, commands, pokeAPI } = state;
+  const { rl, commands } = state;
  
   rl.prompt()
   
@@ -15,33 +13,16 @@ export async function startREPL(state: State) {
     }
 
     const result = cleanInput(input)
-
-    if (result[0] === "exit") {
-      try {
-        commands.exit.callback(state)
-      } catch (err) {
-        console.log((err as Error).message)
-      }
-    } else if (result[0] === "help") {
-      try {
-        commands.help.callback(state)
-      } catch (err) {
-        console.log((err as Error).message)
-      }
-    } else if (result[0] === "map") {
-      try {
-        commands.map.callback(state)
-      } catch (err) {
-        console.log((err as Error).message)
-      }
-    } else if (result[0] === "mapb") {
-      try {
-        commands.mapb.callback(state)
-      } catch (err) {
-        console.log((err as Error).message)
-      }
-    } else {
+    const command = commands[result[0]]
+    if (!command) {
       console.log("Unknown command")
+      rl.prompt()
+      return
+    }
+
+    await command.callback(state, ...result.slice(1))
+
+    if (command.name !== "exit") {
       rl.prompt()
     }
   })
@@ -57,6 +38,3 @@ export function cleanInput(input: string): string[] {
 
   return cleaned
 }
-
-
-

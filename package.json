@@ -7,7 +7,7 @@
     "build": "npx tsc",
     "start": "node dist/main.js",
     "dev": "npx tsc && node dist/main.js",
-    "test": "vitest --run"
+    "test": "vitest --run src"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +17,8 @@
     "@types/node": "^25.3.5",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "@google/genai": "^1.48.0"
   }
 }

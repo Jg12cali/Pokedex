@@ -3,36 +3,44 @@ import type { State } from "./state.js"
 export async function commandMap(state: State) {
   const { pokeAPI, nextLocationsURL } = state;
 
-  if (nextLocationsURL) {
-    let result = await pokeAPI.fetchLocations(nextLocationsURL)
-    state.prevLocationsURL = result.previous
-    state.nextLocationsURL = result.next
-    for (let ob of result.results) {
-      console.log(ob.name)
+  try {
+    if (nextLocationsURL) {
+      const result = await pokeAPI.fetchLocations(nextLocationsURL)
+      state.prevLocationsURL = result.previous
+      state.nextLocationsURL = result.next
+      for (const ob of result.results) {
+        console.log(ob.name)
+      }
+    } else if (!nextLocationsURL) {
+      const result = await pokeAPI.fetchLocations()
+      state.prevLocationsURL = result.previous
+      state.nextLocationsURL = result.next
+      for (const ob of result.results) {
+        console.log(ob.name)
+      }
     }
-  } else if (!nextLocationsURL) {
-    let result = await pokeAPI.fetchLocations()
-    state.prevLocationsURL = result.previous
-    state.nextLocationsURL = result.next
-    for (let ob of result.results) {
-      console.log(ob.name)
-    }
+  } catch (err) {
+    console.log((err as Error).message)
   }
 }
 
 export async function commandMapb(state: State) {
-  const { rl, commands, prevLocationsURL, pokeAPI } = state;
+  const { prevLocationsURL, pokeAPI } = state;
 
-  if (prevLocationsURL) {
-    let result = await pokeAPI.fetchLocations(prevLocationsURL)
-    state.prevLocationsURL = result.previous
-    state.nextLocationsURL = result.next
+  try {
+    if (prevLocationsURL) {
+      const result = await pokeAPI.fetchLocations(prevLocationsURL)
+      state.prevLocationsURL = result.previous
+      state.nextLocationsURL = result.next
 
-    for (let ob of result.results) {
-      console.log(ob.name)
+      for (const ob of result.results) {
+        console.log(ob.name)
+      }
+    } else if (!prevLocationsURL) {
+
+      console.log("you're on the first page")
     }
-  } else if(!prevLocationsURL){
-
-  console.log("you're on the first page")
+  } catch (err) {
+    console.log((err as Error).message)
   }
 }
